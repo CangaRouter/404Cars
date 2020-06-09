@@ -10,13 +10,13 @@
 ## REST API server
 
 - POST `/login`
-  - request parameters and requesty body content
+  - request parameters and request body content
   - response body content
 - GET `/api/something`
   - request parameters
   - response body content
 - POST `/api/something`
-  - request parameters and requesty body content
+  - request parameters and request body content
   - response body content
 - ...
 
