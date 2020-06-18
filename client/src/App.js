@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import MyNavbar from './MyNavbar.js';
+import MyBody from './MyBody.js';
+import MyFooter from './MyFooter.js';
+import LoginForm from './LoginForm.js';
+import BookingForm from './BookingForm.js';
+import { Switch } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  return <Route path="/">
+    <Switch>
+      <Route path="/booking">
+      <MyNavbar showLogin={handleShow} />
+        <BookingForm />
+      </Route>
+      <Route path="/home" >
+        <MyNavbar showLogin={handleShow} />
+        <MyBody />
+        <MyFooter />
+      </Route>
+      <Route exact path="/about">
+      </Route>
+      <Route path="/*">
+        <Redirect exact to="/home" />
+      </Route>
+    </Switch>
+    <LoginForm show={show} handleClose={handleClose} handleShow={handleShow} />
+  </Route>
 }
 
-export default App;
+export default withRouter(App);
