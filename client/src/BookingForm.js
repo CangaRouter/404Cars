@@ -34,17 +34,17 @@ function BookingForm() {
         <Row>
             <Col md={{span : "auto", offset: 3}}>
                 <Form method="POST"  validated={validated} onSubmit={(event) => this.handleSubmit(event)}>
-                    <Form.Row className="my-5">
+                    <Form.Row >
                         <Form.Group as={Col} controlId="startingDate" >
                             <Form.Label>Starting Date</Form.Label>
                             <Form.Control  required type="date" min={moment().format("YYYY-MM-DD")} placeholder="Select a date" onChange={(event) => setStartDate(moment(event.target.value))}  />
                         </Form.Group>
                         <Form.Group as={Col} controlId="endingDate">
                             <Form.Label>Ending Date</Form.Label>
-                            <Form.Control  required type="date" min={ startDate && startDate.format("YYYY-MM-DD") || moment().format("YYYY-MM-DD")}  placeholder="Select a date" onChange={(event) => setEndDate(moment(event.target.value))} />
+                            <Form.Control  required type="date" min={ (startDate && startDate.format("YYYY-MM-DD") )|| moment().format("YYYY-MM-DD")}  placeholder="Select a date" onChange={(event) => setEndDate(moment(event.target.value))} />
                         </Form.Group>
                     </Form.Row>
-                    <Form.Row className="my-5">
+                    <Form.Row >
                         <Form.Group as={Col} controlId="formGridState">
                             <Form.Label className="mr-2" for="inlineFormCustomSelectPref">
                                 Car Category
@@ -98,16 +98,48 @@ function BookingForm() {
                             <option value="Unlimited KM/Day">Unlimited KM/Day</option>
                         </Form.Control>
                     </Form.Group>
-                    <Form.Check onChange={(event) => setInsurance(event.target.value)}
+                    <Row>
+                        <Col>
+                    <Form.Check  onChange={(event) => setInsurance(event.target.value)}
                         type="checkbox"
                         className="my-1 mr-sm-2"
                         id="customControlInline"
                         label="Extra Insurance"
                         custom
                     />
+                    </Col>
+                    <Col>
+                    <h4 className="my-1"> <b>TOTAL:</b></h4>
+                    </Col>
+                    </Row>
+                    <h4  className="my-1"> <b>Credit card details</b></h4> 
+                    <Form.Group controlId="formGridState">
+                        <Form.Label for="inlineFormCustomSelectPref">
+                            Card holder full name
+                                 </Form.Label>
+                        <Form.Control required type="text" placeholder="Type card holder name...">
+                        </Form.Control>
+                    </Form.Group>
+                    <Form.Row>
+                    <Form.Group as={Col} controlId="driverAge">
+                            <Form.Label>Card Number</Form.Label>
+                            <Form.Control required type="number" />
+                        </Form.Group>
+                        <Form.Group as={Col} controlId="driverAge">
+                            <Form.Label>Expiration date</Form.Label>
+                            <Form.Control required type="date" />
+                        </Form.Group>
+                        <Form.Group as={Col} controlId="formGridState">
+                        <Form.Label for="inlineFormCustomSelectPref">
+                            CCV
+                                 </Form.Label>
+                        <Form.Control required type="number" max="999">
+                        </Form.Control>
+                    </Form.Group>
+                        </Form.Row>
                     <Col className="text-right" >
-                        <Button variant="primary" id="confirmButton"type="submit" >
-                            Proceed to payment
+                        <Button variant="primary" id="confirmButton" type="submit" >
+                            Confirm Booking
                       </Button>
                     </Col>
                 </Form>
