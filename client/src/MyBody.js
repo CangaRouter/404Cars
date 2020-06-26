@@ -1,30 +1,18 @@
 import React from 'react';
-import Table from 'react-bootstrap/Table';
-import CarCell from './CarCell.js';
-function MyBody() {
-  return <main className="below-nav"><Table bordered responsive="sm" fluid className="carTable below-nav my-5">
-  <tbody>
-    <tr>
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-    </tr>
-    <tr >
- 
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-    </tr>
-    <tr >
+import CarList from './CarList.js';
+import BookingForm from './BookingForm.js';
+import { Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-      <td className="car"><CarCell/></td>
-    </tr>
-  </tbody>
-</Table>
-</main>
-
+function MyBody(props) {
+  return <Switch>
+    <Route path="/home">
+      <CarList/>
+    </Route>
+    <Route path="/booking">
+      <BookingForm price={props.price} setPrice={props.setPrice} serverPrice={props.serverPrice} cardConfirmation={props.cardConfirmation} checkCard={props.checkCard}/>
+    </Route>
+  </Switch>
 }
 
 export default MyBody;
