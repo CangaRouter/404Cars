@@ -9,7 +9,7 @@ function CarCell() {
     <Container fluid>
       <Row>
         <Col >
-          <p><b>Modello: bella <br />
+          <p><b>
        Brand: Ferrari <br />
        Year: 2020 <br />
        Fuel: Diesel<br />

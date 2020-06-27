@@ -200,7 +200,7 @@ function BookingForm(props) {
                         Card not valid</Alert>}
                     </Form.Row>
                     <Col className="text-right" >
-                        <Button variant="primary" id="confirmButton" type="submit" disabled={props.price == null || props.cardConfirmation!=true ? true : false}>
+                        <Button variant="primary" id="confirmButton" type="submit" disabled={props.price == null || props.cardConfirmation!==true ? true : false}>
                             Confirm Booking
                       </Button>
                     </Col>
