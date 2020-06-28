@@ -58,9 +58,6 @@ function LoginForm(props) {
             </Modal.Footer>
         </Form>
     </Modal>
-
-
-
 }
 
 

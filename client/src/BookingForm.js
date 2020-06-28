@@ -47,7 +47,7 @@ function BookingForm(props) {
         props.requestBooking({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance, price: props.price});
         setRedirect(true);
     }
-
+    //checks if all the values respect basic constraint and sends them to server for card verification
     const checkCard= ()=>{
         if(!props.cardConfirmation){
         if(cardNumber.length===16){
@@ -61,7 +61,7 @@ function BookingForm(props) {
     props.checkCard({cardNumber: cardNumber, cardCCV: cardCCV, cardExpiration: cardExpiration, cardHolder: cardHolder});
     }
 
-
+    //checks if all the values respect basic constraint and sends them to server for price calculation
     const priceCalc = () => {
         if (endDate && startDate && endDate.isSameOrAfter(startDate) && startDate.isAfter(moment().local())) {
             switch (category) {
@@ -97,7 +97,9 @@ function BookingForm(props) {
         }
         props.setPrice(null);
     };
+    //every time a value is updated check if the sets of values is ready to be sent for price calculation
     useEffect(priceCalc, [startDate, endDate, age, category, extraDrivers, estimation, insurance])
+    // same for card verification
     useEffect(checkCard,[cardCCV, cardExpiration, cardHolder, cardNumber])
 
     return <Container fluid>

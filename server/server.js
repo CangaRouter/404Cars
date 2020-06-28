@@ -21,7 +21,7 @@ const expireTime = 3600 * 24 * 7;
 app.use(express.static("client"));
 
 
-
+//checks whether user is present id DB with given password and returns a jwt cookie
 app.post(BASEAPI + "/login", (req, res) => {
     DBManager.checkPassword(req.body.username, req.body.password)
         .then((user) => {
@@ -39,6 +39,7 @@ app.post(BASEAPI + "/login", (req, res) => {
         .catch((err) => new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json(authErrorObj)));
 })
 
+//retrieves cars from DB by analizing the request query parameters
 app.get(BASEAPI + "/cars", (req, res) => {
     if (req.query.category && req.query.brand) {
         DBManager.getByCategoryAndBrand(req.query.category, req.query.brand)
@@ -94,13 +95,15 @@ app.post('/api/logout', (req, res) => {
     res.clearCookie('token').end();
 });
 
+//retrieves bookings from DB associated with a particular user
 app.get(BASEAPI + "/bookings", (req, res) => {
     const userID = req.user && req.user.userID;
     DBManager.getAllBookings(userID)
         .then((bookings) => res.json(bookings))
         .catch((err) => res.status(503).json(dbErrorObj));
 })
-
+//adds a new booking to DB after verifing correctness al all data
+//also selects the right car if avaiable
 app.post(BASEAPI + "/bookings", (req, res) => {
     if (moment.parseZone(req.body.startDate).isSameOrBefore(moment.parseZone(req.body.endDate))) {
         if (req.body.category !== 'A' && req.body.category !== 'B' && req.body.category !== 'C' && req.body.category !== 'D' && req.body.category !== 'E') {
@@ -147,7 +150,7 @@ app.post(BASEAPI + "/bookings", (req, res) => {
     }
 });
 
-
+//return a price for booking after verifing correctness al all data
 app.post(BASEAPI + "/price", (req, res) => {
     if (moment.parseZone(req.body.startDate).isAfter(moment.parseZone(req.body.endDate))) {
         res.status(403).json(bookingErrorObj);
@@ -220,7 +223,7 @@ app.post(BASEAPI + "/price", (req, res) => {
     })
         .catch((err) => { console.log(err); res.status(503).json(dbErrorObj) });
 });
-
+//STUB API verifies correctness of credit card info
 app.post(BASEAPI + "/card", [
     check('cardHolder').isString().isLength({ min: 1 }),
     check('cardNumber').isLength({ min: 16, max: 16 }),
@@ -235,7 +238,7 @@ app.post(BASEAPI + "/card", [
     res.json(true)
 });
 
-
+//deletes a booking associated with userd id and booking id to verify correct user
 app.delete(BASEAPI + "/bookings/:bookingid", (req, res) => {
     const userID = req.user && req.user.userID;
     DBManager.removeBooking(req.params.bookingid, userID)

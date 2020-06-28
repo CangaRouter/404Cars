@@ -1,7 +1,7 @@
 import Booking from './Booking.js';
 import Car from './Car.js'
 const baseURL = "/api";
-
+//sends a request to server only to see if responds with user data (that it retrives from jwt cookie)
 async function isAuthenticated() {
     let url = "/user";
     const response = await fetch(baseURL + url);
@@ -13,7 +13,8 @@ async function isAuthenticated() {
         throw err;  // An object with the error coming from the server
     }
 }
-
+//constructs the request for server based on the brands and catgories lists passed
+// sample--> /cars/?brand=Fiat,BMW&category=A,C
 async function getCars(brands, categories) {
     let url = "/cars";
     if (brands.length > 0) {
@@ -33,7 +34,7 @@ async function getCars(brands, categories) {
         throw err;  // An object with the error coming from the server
     }
 }
-
+//retrieves all avaiable categories from server
 async function getCategories() {
     let url = "/allcategories";
     const response = await fetch(baseURL + url);
@@ -45,7 +46,7 @@ async function getCategories() {
         throw err;  // An object with the error coming from the server
     }
 }
-
+//retrieves all avaiable brands from server
 async function getBrands() {
     let url = "/allbrands";
     const response = await fetch(baseURL + url);
@@ -59,7 +60,7 @@ async function getBrands() {
 }
 
 
-
+//retrieves list of user bookings exploiting jwt cookie
 async function getBookings() {
     let url = "/bookings";
     const response = await fetch(baseURL + url);
@@ -71,7 +72,7 @@ async function getBookings() {
         throw err;  // An object with the error coming from the server
     }
 }
-
+//sends server all info for a possible booking
 async function addBooking(booking) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/bookings", {
@@ -92,7 +93,7 @@ async function addBooking(booking) {
         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     });
 }
-
+//sends server all info for a possible booking to calculate price
 async function calculatePrice(booking) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/price", {
@@ -115,7 +116,7 @@ async function calculatePrice(booking) {
         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     });
 }
-
+//sends server all credit card info for verification
 async function checkCard(cardInfo) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/card", {
@@ -140,7 +141,7 @@ async function checkCard(cardInfo) {
 }
 
 
-
+//sends server a booking id to be deleted from DB, exploits jwt token for authorization verification
 async function deleteBooking(bookingId) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/bookings/" + bookingId, {

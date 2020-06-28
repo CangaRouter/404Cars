@@ -57,7 +57,7 @@
 - Table `users` - contains  id, hash, email ,nbookings ----> storing user info needed for login and booking
 - Table `bookings` - contains id,start date, end date, category, extra drivers, extra insurance, driver's age, estimated km/day, price, carId, userId  --> contains all bookings made toghether with id of user and car 
 
-- Table `cars` - contains id,brand, category, fuel type, year, model -----> list of all cars and their infos
+- Table `cars` - contains id,brand, category, fuel type, year, model -----> list of all cars and their info
 
 
 ## Main React Components

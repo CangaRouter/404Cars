@@ -152,6 +152,7 @@ exports.removeBooking = function (id = -1, userID) {
         })
     })
 }
+//selects right car for booking
 exports.bookCar = function (startDate, endDate, category) {
     return new Promise((resolve, reject) => {
         const subSql1 = "SELECT carId FROM bookings WHERE DATE(startDate)<=DATE(?) AND DATE(endDate)<=DATE(?) AND DATE(endDate)>=DATE(?)" // correct order -> start,end,start
@@ -184,21 +185,6 @@ exports.createBooking = function (booking) {
     })
 }
 
-exports.getPrice = function (booking, userID) {
-    return new Promise((resolve, reject) => {
-        const sql = "SELECT *  FROM bookings where userId=?;"
-        db.all(sql, [userID], (err, rows) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            const bookings = rows.map((row) =>
-                ({ id: row.id, startDate: row.startDate, endDate: row.endDate, age: row.age, category: row.category, extraDrivers: row.extraDrivers, estimation: row.estimation, insurance: row.insurance, price: row.price, carId: row.carId, userId: row.userId })
-            );
-            resolve(bookings);
-        });
-    });
-}
 
 exports.getUser = function (id = -1) {
     return new Promise((resolve, reject) => {
@@ -230,7 +216,7 @@ exports.updateUserBookings = function (id = -1, sum) {
         });
     });
 }
-
+//counts how many cars are of a given category
 exports.countCars = function (category) {
     return new Promise((resolve, reject) => {
         const sql = `SELECT COUNT(*)  FROM cars where category=?;`
@@ -243,7 +229,7 @@ exports.countCars = function (category) {
         });
     });
 }
-
+//retrieves all booking happening in same period of given one and using the same category
 exports.getConcurrentBookings = function (startDate, endDate, category) {
     return new Promise((resolve, reject) => {
         const subSql1 = "SELECT id FROM bookings WHERE DATE(startDate)<=DATE(?) AND DATE(endDate)<=DATE(?) AND DATE(endDate)>=DATE(?)" // correct order -> start,end,start
