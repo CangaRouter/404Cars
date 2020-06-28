@@ -245,13 +245,12 @@ exports.countCars = function (category) {
 }
 
 exports.getConcurrentBookings = function (startDate, endDate, category) {
-    console.log(startDate);
     return new Promise((resolve, reject) => {
         const subSql1 = "SELECT id FROM bookings WHERE DATE(startDate)<=DATE(?) AND DATE(endDate)<=DATE(?) AND DATE(endDate)>=DATE(?)" // correct order -> start,end,start
         const subSql2 = "SELECT id FROM bookings WHERE DATE(startDate)>=DATE(?) AND DATE(endDate)<=DATE(?)" // correct order -> start,end
         const subSql3 = "SELECT id FROM bookings WHERE DATE(startDate)>=DATE(?) AND DATE(startDate)<=DATE(?) and DATE(endDate)>=DATE(?)" // correct order -> start,end,end
         const subSql4 = "SELECT id FROM bookings WHERE DATE(startDate)<=DATE(?) AND DATE(endDate)>=DATE(?)" // correct order -> start,end
-        const sql = `SELECT * FROM bookings WHERE id IN(${subSql1}) OR id IN(${subSql2}) OR id IN(${subSql3}) OR id IN (${subSql4}) AND category=? ;`
+        const sql = `SELECT * FROM bookings WHERE (id IN(${subSql1}) OR id IN(${subSql2}) OR id IN(${subSql3}) OR id IN (${subSql4})) AND category=? ;`
         db.all(sql, [startDate, endDate, startDate, startDate, endDate, startDate, endDate, endDate, startDate, endDate, category], (err, rows) => {
             if (err) {
                 reject(err);
@@ -274,7 +273,7 @@ exports.checkPassword = function (user = null, password = null) {
                 return;
             }
             if (row) {
-                if (bcrypt.compareSync(password, row.hash)) resolve(row);
+                if (bcrypt.compareSync(password, row.hash)) resolve({id: row.id,name: row.name,email: row.email,nbookings: row.nbookings});
                 resolve(false);
             } else {
                 resolve(false);

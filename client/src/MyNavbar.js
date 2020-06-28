@@ -58,6 +58,12 @@ function MyNavbar(props) {
                         </Col>
                     </Route>
 
+                    <Route path="/about">
+                        <Col md={6} className="center-block text-center">
+                            <h1 ><b >About me</b></h1>
+                        </Col>
+                    </Route>
+
                     <Col className="slope2" xs={1}>
                     </Col>
                     <Col className="user" xs={2}>
@@ -65,14 +71,20 @@ function MyNavbar(props) {
                             {!props.loggedUser && <span className="mr-1 linkify white" onClick={() => props.showLogin()} >Login</span>}
                             {props.loggedUser && <div className="text-left"><Link className="mr-1 white" to={"/history"}>My History</Link> <Link className="mr-1 white" to={"/booking"}>Booking</Link>
                             </div>}
-                            <div className="text-center">
-                                <svg className="bi bi-person-circle ml-3" width="2em" height="2em" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
-                                    <path fillRule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                                    <path fillRule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
+
+                            {!props.loggedUser && <div className="text-center"> <svg onClick={() => props.showLogin()} className="bi bi-person-circle ml-3 linkify" width="2em" height="2em" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
+                                <path fillRule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                <path fillRule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
+                            </svg> </div>}
+                            {props.loggedUser && <div className="text-center">
+                                <svg onClick={() => props.logout()} width="2em" height="2em" viewBox="0 0 16 16" className="bi bi-door-open ml-3 linkify" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                    <path fillRule="evenodd" d="M1 15.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5zM11.5 2H11V1h.5A1.5 1.5 0 0 1 13 2.5V15h-1V2.5a.5.5 0 0 0-.5-.5z" />
+                                    <path fillRule="evenodd" d="M10.828.122A.5.5 0 0 1 11 .5V15h-1V1.077l-6 .857V15H3V1.5a.5.5 0 0 1 .43-.495l7-1a.5.5 0 0 1 .398.117z" />
+                                    <path d="M8 9c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1z" />
                                 </svg>
-                                {props.loggedUser && <div className="ml-3 white">{props.loggedUser.name}</div>}
-                            </div>
+                                <div className="ml-3 white">{props.loggedUser.name}</div></div>}
+
 
                         </Navbar.Collapse>
                     </Col>

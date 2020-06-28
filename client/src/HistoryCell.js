@@ -27,8 +27,8 @@ function HistoryCell(props) {
         <Col xs={4}>
         <h5><b>Rental info</b></h5>
           <p><b>
-       From: {moment(props.booking.startDate).format('l')}<br /> 
-       To: {moment(props.booking.endDate).format('l')}<br />
+       From: {moment.parseZone(props.booking.startDate).format('l')}<br /> 
+       To: {moment.parseZone(props.booking.endDate).format('l')}<br />
        Driver's age: {props.booking.age}<br />
        Number of Drivers: {props.booking.extraDrivers+1}<br />
        Estimated KM/day: {props.booking.estimation}<br />
@@ -37,7 +37,7 @@ function HistoryCell(props) {
        </b></p>
         </Col>
         <Col className="my-2">
-         {moment(props.booking.startDate).isAfter(moment()) && <Button variant="danger" id="cancelButton" className="my-5" onClick={()=>props.openModal(props.booking)} >Cancel Reservation</Button>}
+         {moment.parseZone(props.booking.startDate).isAfter(moment().local()) && <Button variant="danger" id="cancelButton" className="my-5" onClick={()=>props.openModal(props.booking)} >Cancel Reservation</Button>}
         </Col>
       </Row>
     </Container>

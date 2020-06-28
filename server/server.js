@@ -16,28 +16,26 @@ app.use(express.json());
 
 const jwtSecretContent = require('./secret.js');
 const jwtSecret = jwtSecretContent.secret;
-const expireTime = 3600 * 24 * 7*1000;
+const expireTime = 3600 * 24 * 7;
 app.use(express.static("client"));
 
 
 
 app.post(BASEAPI + "/login", (req, res) => {
     DBManager.checkPassword(req.body.username, req.body.password)
-        .then((exist) => {
-            if (exist) {
-                const token = jsonwebtoken.sign({ userID: exist.id }, jwtSecret, { expiresIn: expireTime });
-                res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: expireTime });
-                res.json(exist);
+        .then((user) => {
+            if (user) {
+                const token = jsonwebtoken.sign({ userID: user.id }, jwtSecret, { expiresIn: expireTime });
+                res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
+                res.json(user);
             }
             else {
-                () => new Promise((resolve) => {
-                    setTimeout(resolve, 1000)
-                }).then(
-                    () => res.status(401).end()
-                )
+                res.status(401).send({
+                    errors: [{ 'param': 'Server', 'msg': 'Invalid credentials' }]
+                })
             }
         })
-        .catch((err) => res.status(503).json(dbErrorObj));
+        .catch((err) => new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json(authErrorObj)));
 })
 
 app.get(BASEAPI + "/cars", (req, res) => {
@@ -74,6 +72,7 @@ app.get(BASEAPI + "/allbrands", (req, res) => {
 
 app.use(cookieParser());
 
+
 app.use(
     jwt({
         secret: jwtSecret,
@@ -82,10 +81,16 @@ app.use(
 );
 
 
+
+
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
     }
+});
+
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('token').end();
 });
 
 app.get(BASEAPI + "/bookings", (req, res) => {
@@ -96,21 +101,21 @@ app.get(BASEAPI + "/bookings", (req, res) => {
 })
 
 app.post(BASEAPI + "/bookings", (req, res) => {
-    if (moment(req.body.startDate).isSameOrBefore(moment(req.body.endDate))) {
+    if (moment.parseZone(req.body.startDate).isSameOrBefore(moment.parseZone(req.body.endDate))) {
         if (req.body.category !== 'A' && req.body.category !== 'B' && req.body.category !== 'C' && req.body.category !== 'D' && req.body.category !== 'E') {
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
         }
         if (req.body.estimation !== "Less than 50 KM/Day" && req.body.estimation !== "Less than 150 KM/Day" && req.body.estimation !== "Unlimited KM/Day") {
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
         }
         if (!req.body.age || (req.body.age < 18 || req.body.age > 200)) {
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
         }
         if (req.body.extraDrivers < 0 || req.body.extraDrivers > 5) {
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
         }
         const userID = req.user && req.user.userID;
@@ -137,14 +142,14 @@ app.post(BASEAPI + "/bookings", (req, res) => {
                 }
             }).catch((err) => { console.log(err); res.status(503).json(dbErrorObj) });
     } else {
-        res.status(405).json(bookingErrorObj);
+        res.status(403).json(bookingErrorObj);
     }
 });
 
 
 app.post(BASEAPI + "/price", (req, res) => {
-    if (moment(req.body.startDate).isAfter(moment(req.body.endDate))) {
-        res.status(405).json(bookingErrorObj);
+    if (moment.parseZone(req.body.startDate).isAfter(moment.parseZone(req.body.endDate))) {
+        res.status(403).json(bookingErrorObj);
         return;
     }
     let price = 0;
@@ -160,7 +165,7 @@ app.post(BASEAPI + "/price", (req, res) => {
         case 'E': price = 40;
             break;
         default:
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
     }
     switch (req.body.estimation) {
@@ -171,11 +176,11 @@ app.post(BASEAPI + "/price", (req, res) => {
         case "Unlimited KM/Day": price = price * 1.05
             break;
         default:
-            res.status(405).json(bookingErrorObj);
+            res.status(403).json(bookingErrorObj);
             return;
     }
     if (!req.body.age || (req.body.age < 18 || req.body.age > 200)) {
-        res.status(405).json(bookingErrorObj); return;
+        res.status(403).json(bookingErrorObj); return;
     }
     if (req.body.age > 65)
         price = price * 1.1;
@@ -183,7 +188,7 @@ app.post(BASEAPI + "/price", (req, res) => {
         price = price * 1.05;
 
     if (req.body.extraDrivers < 0 || req.body.extraDrivers > 5) {
-        res.status(405).json(bookingErrorObj);
+        res.status(403).json(bookingErrorObj);
         return;
     }
     if (req.body.extraDrivers > 0)
@@ -201,11 +206,11 @@ app.post(BASEAPI + "/price", (req, res) => {
                         res.json(price);
                         return;
                     }
-                    if (bookings.length / carCount > 0.89) {console.log("here"); price = price * 1.1;}
+                    if (bookings.length / carCount > 0.89) price = price * 1.1;
                     if (user.nbookings >= 3) price = price * 0.9;
-                    price = Math.round(price);
-                    let duration = moment(req.body.endDate).diff(moment(req.body.startDate), 'days');
+                    let duration = moment.parseZone(req.body.endDate).diff(moment.parseZone(req.body.startDate), 'days');
                     price = price * (duration + 1);
+                    price= Number.parseFloat(price).toFixed(2);
                     res.json(price);
                 })
                 .catch((err) => { console.log(err); res.status(503).json(dbErrorObj) });
@@ -218,8 +223,8 @@ app.post(BASEAPI + "/price", (req, res) => {
 app.post(BASEAPI + "/card", (req, res) => {
     if (req.body.cardNumber.length !== 16) { res.json(false); return; };
     if (req.body.cardHolder.length === 0) { res.json(false); return; };
-    if (req.body.cardCCV.length != 3 && req.body.cardCCV=="000") { res.json(false); return; };
-    if (moment(req.body.cardExpiration).isBefore(moment())) { res.json(false); return; };
+    if (req.body.cardCCV.length != 3) { res.json(false); return; };
+    if (moment.parseZone(req.body.cardExpiration).isBefore(moment().local())) { res.json(false); return; };
     res.json(true)
 });
 
@@ -227,7 +232,9 @@ app.post(BASEAPI + "/card", (req, res) => {
 app.delete(BASEAPI + "/bookings/:bookingid", (req, res) => {
     const userID = req.user && req.user.userID;
     DBManager.removeBooking(req.params.bookingid, userID)
-        .then((message) => res.json(message))
+        .then((message) => DBManager.updateUserBookings(userID, -1).then(() =>
+            res.json(message)
+        ).catch((err) => res.status(503).json(dbErrorObj)))
         .catch((err) => res.status(503).json(dbErrorObj));
 })
 

@@ -17,7 +17,7 @@ function BookingForm(props) {
     const [extraDrivers, setExtraDrivers] = useState("");
     const [estimation, setEstimation] = useState("");
     const [insurance, setInsurance] = useState(false);
-    const [validated, setValidated] = useState(false);
+    const [validated, setValidated] = useState("");
     const [cardNumber, setCardNumber] = useState("");
     const [cardHolder, setCardHolder] = useState("");
     const [cardExpiration, setCardExpiration] = useState("");
@@ -32,18 +32,18 @@ function BookingForm(props) {
             event.stopPropagation();
         }
         if (props.price === null) {
-            setValidated(false);
+            setValidated("false");
             return;
         }
         if (!props.cardConfirmation) {
-            setValidated(false);
+            setValidated("false");
             return;
         }
         if(props.price==="not avaiable"){
-            setValidated(false);
+            setValidated("false");
             return;
         }
-        setValidated(true);
+        setValidated("true");
         props.requestBooking({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance, price: props.price});
         setRedirect(true);
     }
@@ -53,7 +53,7 @@ function BookingForm(props) {
         if(cardNumber.length===16){
             if(cardHolder===null || cardHolder==="") return;
             if(cardCCV.length!==3) return;
-            if(moment(cardExpiration).isBefore(moment())) return;
+            if(moment.parseZone(cardExpiration).isBefore(moment())) return;
             props.checkCard({cardNumber: cardNumber, cardCCV: cardCCV, cardExpiration: cardExpiration, cardHolder: cardHolder});
         }
     }
@@ -63,7 +63,7 @@ function BookingForm(props) {
 
 
     const priceCalc = () => {
-        if (endDate && startDate && endDate.isSameOrAfter(startDate) && startDate.isAfter(moment())) {
+        if (endDate && startDate && endDate.isSameOrAfter(startDate) && startDate.isAfter(moment().local())) {
             switch (category) {
                 case "A":
                     break;
@@ -108,12 +108,11 @@ function BookingForm(props) {
                     <Form.Row >
                         <Form.Group as={Col} controlId="startingDate" >
                             <Form.Label>Starting Date</Form.Label>
-                            <Form.Control required type="date" min={moment().format("YYYY-MM-DD")} placeholder="Select a date" value={(startDate && startDate.format("YYYY-MM-DD")) || ""} onChange={(event) => setStartDate(moment(event.target.value))} />
-                            <Form.Control.Feedback type="invalid">Looks good!</Form.Control.Feedback>
+                            <Form.Control required type="date" min={moment().local().format("YYYY-MM-DD")} placeholder="Select a date" value={(startDate && startDate.format("YYYY-MM-DD")) || ""} onChange={(event) => setStartDate(moment.parseZone(event.target.value))} />
                         </Form.Group>
                         <Form.Group as={Col} controlId="endingDate">
                             <Form.Label>Ending Date</Form.Label>
-                            <Form.Control required type="date" min={(startDate && startDate.format("YYYY-MM-DD")) || moment().format("YYYY-MM-DD")} value={(endDate && endDate.format("YYYY-MM-DD")) || ""} placeholder="Select a date" onChange={(event) => setEndDate(moment(event.target.value))} />
+                            <Form.Control required type="date" min={(startDate && startDate.format("YYYY-MM-DD")) || moment().local().format("YYYY-MM-DD")} value={(endDate && endDate.format("YYYY-MM-DD")) || ""} placeholder="Select a date" onChange={(event) => setEndDate(moment.parseZone(event.target.value))} />
                         </Form.Group>
                     </Form.Row>
                     <Form.Row >
@@ -199,7 +198,7 @@ function BookingForm(props) {
                         </Form.Group>
                         <Form.Group as={Col} >
                             <Form.Label>Expiration date</Form.Label>
-                            <Form.Control value={(cardExpiration && cardExpiration.format("YYYY-MM-DD")) || ""} required type="date" min={moment().format("YYYY-MM-DD")} onChange={(event) => setCardExpiration(moment(event.target.value))} />
+                            <Form.Control value={(cardExpiration && cardExpiration.format("YYYY-MM-DD")) || ""} required type="date" min={moment().format("YYYY-MM-DD")} onChange={(event) => setCardExpiration(moment.parseZone(event.target.value))} />
                         </Form.Group>
                         <Form.Group as={Col} >
                             <Form.Label htmlFor="ccv">

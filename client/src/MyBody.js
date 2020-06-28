@@ -4,6 +4,11 @@ import BookingForm from './BookingForm.js';
 import ConfirmationPage from './ConfirmationPage.js';
 import { Switch } from 'react-router-dom';
 import { Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Jumbotron from 'react-bootstrap/Jumbotron'
+
+
 import History from './History.js'
 
 function MyBody(props) {
@@ -19,6 +24,14 @@ function MyBody(props) {
     </Route>
     <Route path="/history">
       <History cancelBooking={props.cancelBooking} bookings={props.bookings}/>
+    </Route>
+    <Route path="/about">
+    <Jumbotron >
+    <h1>s277867 Marco Giulio Pappalardo</h1>
+    <p>
+      <Link to="/home"><Button variant="primary">Back home</Button></Link>
+    </p>
+  </Jumbotron>
     </Route>
   </Switch>
 }

@@ -24,17 +24,23 @@ function App() {
   const [loggedUser, setLoggedUser] = useState(null);
   const [bookingResult, setBookingResult] = useState("");
   const [bookingList, setBookingList] = useState([]);
+  const [loginError, setLoginError] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const setup = () => {
+    setLoginError(false);
+
+    setListaFiltriBrand([]);
+
+    setListaFiltriCategoria([]);
+
+
     API.isAuthenticated().then((user) => {
       setLoggedUser(user);
     }).catch((err) => {
       setLoggedUser(null);
     });
-    setListaFiltriBrand([]);
-    setListaFiltriCategoria([]);
     API.getCategories().then((categories) => setCategories(categories)).catch((err) => {
       setCategories([]);
     });
@@ -57,62 +63,62 @@ function App() {
   }
 
   const login = (email, password) => {
-    return new Promise((resolve,reject)=>{
-      API.userLogin(email, password).then((user) => {
-      setLoggedUser(user);
-      resolve(true);
+    API.userLogin(email, password).then((user) => {
       handleClose();
-    })
-      .catch(
-        reject(false)
+      setLoggedUser(user);
+      setLoginError(false);
+    }).catch(()=>
+        setLoginError(true)
       )
-       
-    });
-   
-    
   }
 
+  const logout = () => {
+    API.userLogout()
+      .then(setLoggedUser(null))
+  }
   const applyFilters = () => {
     API.getCars(listaFiltriBrand, listaFiltriCategoria).then(cars => setCars(cars))
   }
 
   const requestBooking = (booking) => {
-    API.addBooking(booking).then(()=>{
+    API.addBooking(booking).then(() => {
       setBookingResult("Confirmed");
       setPrice(null);
       setCardConfirmation(null);
       getBookings();
     }
-    ).catch((err) => {
-      setBookingResult(err.msg);
-    });
+    ).catch((err) => 
+      setBookingResult(err.msg)
+    );
   }
 
-  const cancelBooking=(id)=>{
+  const cancelBooking = (id) => {
     API.deleteBooking(id)
-    .then(()=>getBookings())
-    .catch(()=>getBookings());
+      .then(() => getBookings())
+      .catch(() => getBookings());
   }
   const getBookings = () => {
-    API.getBookings().then((bookings) => {
-      bookings.sort((b1, b2) =>
-        moment(b1.startDate).isBefore(moment(b2.startDate)));
-      setBookingList(bookings);
-    })
-      .catch(setBookingList([]))
+    if (loggedUser) {
+      API.getBookings().then((bookings) => {
+        bookings.sort((b1, b2) =>
+          moment.parseZone(b1.startDate).isAfter(moment.parseZone(b2.startDate)));
+        setBookingList(bookings);
+      })
+        .catch(setBookingList([]))
+    }
   }
   useEffect(setup, []);
   useEffect(getBookings, [loggedUser]);
   useEffect(applyFilters, [listaFiltriBrand, listaFiltriCategoria]);
 
   return <Route path="/">
-    <MyNavbar loggedUser={loggedUser} showLogin={handleShow} listaFiltriCategoria={listaFiltriCategoria} listaFiltriBrand={listaFiltriBrand} setListaFiltriCategoria={setListaFiltriCategoria} setListaFiltriBrand={setListaFiltriBrand} brands={brands} categories={categories} />
+    <MyNavbar logout={logout} loggedUser={loggedUser} showLogin={handleShow} listaFiltriCategoria={listaFiltriCategoria} listaFiltriBrand={listaFiltriBrand} setListaFiltriCategoria={setListaFiltriCategoria} setListaFiltriBrand={setListaFiltriBrand} brands={brands} categories={categories} />
     <MyBody cancelBooking={cancelBooking} bookings={bookingList} bookingResult={bookingResult} requestBooking={requestBooking} price={price} setPrice={setPrice} serverPrice={serverPrice} checkCard={checkCard} cardConfirmation={cardConfirmation} cars={cars} />
     <MyFooter />
     <Route path="/*">
       <Redirect exact to="/home" />
     </Route>
-    <LoginForm show={show} handleClose={handleClose} handleShow={handleShow} login={login} user={loggedUser} />
+    <LoginForm error={loginError} show={show} handleClose={handleClose} handleShow={handleShow} login={login} user={loggedUser} />
   </Route>
 }
 

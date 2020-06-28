@@ -16,7 +16,7 @@ return <Modal show={props.open} onHide={props.handleClose}>
     <tbody>
         <tr>
             <td> Dates: </td>
-            <td>{props.booking.startDate && moment(props.booking.startDate).format('l') } –– {props.booking.endDate &&  moment(props.booking.endDate).format('l')}</td>
+            <td>{props.booking.startDate && moment.parseZone(props.booking.startDate).format('l') } –– {props.booking.endDate &&  moment.parseZone(props.booking.endDate).format('l')}</td>
         </tr>
         <tr>
             <td>  Category: </td>
