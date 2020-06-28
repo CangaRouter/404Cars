@@ -9,17 +9,17 @@ import moment from 'moment';
 
 
 function BookingForm(props) {
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [age, setAge] = useState(null);
-    const [category, setCategory] = useState(null);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [age, setAge] = useState("");
+    const [category, setCategory] = useState("");
     const [extraDrivers, setExtraDrivers] = useState(0);
     const [estimation, setEstimation] = useState(0);
     const [insurance, setInsurance] = useState(false);
     const [validated, setValidated] = useState(false);
     const [cardNumber, setCardNumber] = useState(0);
-    const [cardHolder, setCardHolder] = useState(null);
-    const [cardExpiration, setCardExpiration] = useState(null);
+    const [cardHolder, setCardHolder] = useState("");
+    const [cardExpiration, setCardExpiration] = useState("");
     const [cardCCV, setCardCCV] = useState(0);
 
 
@@ -33,7 +33,11 @@ function BookingForm(props) {
             setValidated(false);
             return;
         }
-        if (props.cardConfirmation === false) {
+        if (!props.cardConfirmation) {
+            setValidated(false);
+            return;
+        }
+        if(props.price==="not avaiable"){
             setValidated(false);
             return;
         }
@@ -41,12 +45,16 @@ function BookingForm(props) {
     }
 
     const checkCard= ()=>{
+        if(!props.cardConfirmation){
         if(cardNumber.length===16){
             if(cardHolder===null || cardHolder==="") return;
             if(cardCCV.length!==3) return;
             if(cardExpiration.isBefore(moment())) return;
             props.checkCard({cardNumber: cardNumber, cardCCV: cardCCV, cardExpiration: cardExpiration, cardHolder: cardHolder});
         }
+    }
+    else
+    props.checkCard({cardNumber: cardNumber, cardCCV: cardCCV, cardExpiration: cardExpiration, cardHolder: cardHolder});
     }
 
 
@@ -80,7 +88,6 @@ function BookingForm(props) {
             }
             if (!age || (age < 0 || age > 200)) { props.setPrice(null); return; }
             if (extraDrivers < 0 || extraDrivers > 5) { props.setPrice(null); return; }
-            console.log({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance })
             props.serverPrice({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance })
             return;
         }
@@ -109,7 +116,7 @@ function BookingForm(props) {
                             <Form.Label className="mr-2" htmlFor="category">
                                 Car Category
                                  </Form.Label>
-                            <Form.Control required onChange={(event) => setCategory(event.target.value)}
+                            <Form.Control required value={category} onChange={(event) => setCategory(event.target.value)}
                                 as="select"
                                 className=" mr-sm-2"
                                 id="category"
@@ -148,7 +155,7 @@ function BookingForm(props) {
                         <Form.Label htmlFor="estimation">
                             Estimated KM/Day
                                  </Form.Label>
-                        <Form.Control required onChange={(event) => setEstimation(event.target.value)}
+                        <Form.Control required value={estimation} onChange={(event) => setEstimation(event.target.value)}
                             as="select"
                             id="estimation"
                             custom>
@@ -169,7 +176,7 @@ function BookingForm(props) {
                             />
                         </Col>
                         <Col>
-                            <h4 className="my-1"> <b>TOTAL: {props.price}</b></h4>
+                           {props.price==="not avaiable"? <h4 className="my-1"> <b> {props.price}</b></h4>    : <h4 className="my-1"> <b>TOTAL: {props.price}€</b></h4> }
                         </Col>
                     </Row>
                     <h4 className="my-1"> <b>Credit card details</b></h4>
@@ -196,11 +203,12 @@ function BookingForm(props) {
                             <Form.Control value={cardCCV} required type="number"  max="999" onChange={(event) => setCardCCV(event.target.value)}>
                             </Form.Control>
                         </Form.Group>
-                        {props.cardConfirmation === false && <Alert  variant="danger">
-                        Card not valid</Alert>}
+                       
                     </Form.Row>
+                    {props.cardConfirmation === false && <Alert  variant="danger">
+                        Card not valid</Alert>}
                     <Col className="text-right" >
-                        <Button variant="primary" id="confirmButton" type="submit" disabled={props.price == null || props.cardConfirmation!==true ? true : false}>
+                        <Button variant="primary" id="confirmButton" type="submit" disabled={props.price === null || props.cardConfirmation!==true ? true : false}>
                             Confirm Booking
                       </Button>
                     </Col>

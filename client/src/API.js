@@ -1,4 +1,4 @@
-import Booking from './Booking,js';
+import Booking from './Booking.js';
 import Car from './Car.js'
 const baseURL = "/api";
 
@@ -14,13 +14,17 @@ async function isAuthenticated(){
     }
 }
 
-async function getCars(filter) {
+async function getCars(brands, categories) {
     let url = "/cars";
-    if(filter){
-        const queryParams = "?filter=" + filter;
-        url += queryParams;
+    if(brands.length>0){
+        url += "/?brand="+brands;
     }
-    const response = await fetch(baseURL + url);
+    if(brands.length>0 && categories.length>0){
+        url += "&category="+categories;
+    }else if(categories.length>0){
+        url+="/?category="+categories;
+    }
+    const response = await fetch(baseURL + url)
     const carsJson = await response.json();
     if(response.ok){
         return carsJson.map((c) => new Car(c.id,c.brand,c.category, c.fuel,c.year));
@@ -30,6 +34,32 @@ async function getCars(filter) {
     }
 }
 
+async function getCategories() {
+    let url = "/allcategories";
+    const response = await fetch(baseURL + url);
+    const categoriesJson = await response.json();
+    if(response.ok){
+        return categoriesJson;
+    } else {
+        let err = {status: response.status, errObj:categoriesJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function getBrands() {
+    let url = "/allbrands";
+    const response = await fetch(baseURL + url);
+    const brandsJson = await response.json();
+    if(response.ok){
+        return brandsJson;
+    } else {
+        let err = {status: response.status, errObj:brandsJson};
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+
+
 async function getBookings() {
     let url = "/bookings";
 
@@ -38,7 +68,7 @@ async function getBookings() {
     if(response.ok){
         return bookingJson.map((b) => new Booking(b.id,b.startDate,b.endDate, b.age,b.category,b.extraDrivers, b.estimation, b.insurance));
     } else {
-        let err = {status: response.status, errObj:carsJson};
+        let err = {status: response.status, errObj:bookingJson};
         throw err;  // An object with the error coming from the server
     }
 }
@@ -66,7 +96,7 @@ async function addBooking(booking) {
 
 async function calculatePrice(booking) {
     return new Promise((resolve, reject) => {
-        fetch(baseURL + "/booking", {
+        fetch(baseURL + "/price", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,6 +106,29 @@ async function calculatePrice(booking) {
             if(response.ok) {
                 response.json().then((price) => {
                     resolve(price);
+                });
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+async function checkCard(cardInfo) {
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + "/card", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cardInfo),
+        }).then( (response) => {
+            if(response.ok) {
+                response.json().then((confirmation) => {
+                    resolve(confirmation);
                 });
             } else {
                 // analyze the cause of error
@@ -146,5 +199,5 @@ async function userLogout(username, password) {
     });
 }
 
-const API = { isAuthenticated,getCars, calculatePrice, getBookings,addBooking, deleteBooking, userLogin, userLogout} ;
+const API = { isAuthenticated,getCars,getCategories, getBrands, calculatePrice,checkCard, getBookings,addBooking, deleteBooking, userLogin, userLogout} ;
 export default API;

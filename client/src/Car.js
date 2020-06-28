@@ -1,4 +1,3 @@
-"use strict";
 
 class Car{
     constructor(id, brand, category, fuel, year ){
@@ -10,7 +9,6 @@ class Car{
         this.fuel=fuel;
         this.year=year;
     }
-
 }
 
 export default Car;

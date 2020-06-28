@@ -7,7 +7,7 @@ import { Route } from 'react-router-dom';
 function MyBody(props) {
   return <Switch>
     <Route path="/home">
-      <CarList/>
+      <CarList cars={props.cars}/>
     </Route>
     <Route path="/booking">
       <BookingForm price={props.price} setPrice={props.setPrice} serverPrice={props.serverPrice} cardConfirmation={props.cardConfirmation} checkCard={props.checkCard}/>
