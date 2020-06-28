@@ -27,9 +27,10 @@ function MyBody(props) {
     </Route>
     <Route path="/about">
     <Jumbotron >
-    <h1>s277867 Marco Giulio Pappalardo</h1>
+    <h1>Marco Giulio Pappalardo</h1>
+    <h1>s277867 <i>at</i> studenti <i>dot</i> polito <i>dot</i> it</h1>
     <p>
-      <Link to="/home"><Button variant="primary">Back home</Button></Link>
+      <Link to="/home"><Button variant="dark">Back home</Button></Link>
     </p>
   </Jumbotron>
     </Route>

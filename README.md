@@ -68,7 +68,7 @@
 - `LoginForm` (in `LoginForm.js`): modal for login
 - `ConfirmationPage` (in `ConfirmationPage.js`): contains a jumbotron with result of booking (a text)
 - `Summary` (in `Summary.js`): modal that works as confirmation for canceling a reservation
-- `History`(in `History.js`):contains a list of all user reservation with delete button only for future ones
+- `History`(in `History.js`):contains a list of all user reservation with delete button only for future ones dates are in format (mm/dd/yyyy)
 - `CarList` (in `CarList.js`): contains a list of all cars owned by the rental
 
 

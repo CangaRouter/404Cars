@@ -27,8 +27,8 @@ function HistoryCell(props) {
         <Col xs={4}>
         <h5><b>Rental info</b></h5>
           <p><b>
-       From: {moment.parseZone(props.booking.startDate).format('l')}<br /> 
-       To: {moment.parseZone(props.booking.endDate).format('l')}<br />
+       From: {moment.parseZone(props.booking.startDate).format('L')}<br /> 
+       To: {moment.parseZone(props.booking.endDate).format('L')}<br />
        Driver's age: {props.booking.age}<br />
        Number of Drivers: {props.booking.extraDrivers+1}<br />
        Estimated KM/day: {props.booking.estimation}<br />
