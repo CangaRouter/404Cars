@@ -1,6 +1,6 @@
 
 class Car{
-    constructor(id, brand, category, fuel, year ){
+    constructor(id, brand, category, fuel, year, model ){
         if(id){
             this.id=id
         }
@@ -8,6 +8,7 @@ class Car{
         this.category=category;
         this.fuel=fuel;
         this.year=year;
+        this.model=model;
     }
 }
 

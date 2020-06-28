@@ -25,13 +25,13 @@ function CarCell(props) {
         <Col >
           <p><b>
        Brand: {props.car.brand} <br />
+       Model: {props.car.model}<br />
        Year: {props.car.year} <br />
        Fuel: {props.car.fuel}<br />
        Category: {props.car.category}</b></p>
         </Col>
         <Col >
-          <h4 className="green" >From {price}€/Day</h4>
-          <h4 className="red">Avaiable from 24/12/2020</h4>
+          <h4 className="my-4" >From {price}€/Day</h4>
         </Col>
       </Row>
     </Container>

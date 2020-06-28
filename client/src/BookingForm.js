@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import moment from 'moment';
+import { Redirect } from 'react-router-dom';
 
 
 function BookingForm(props) {
@@ -13,14 +14,15 @@ function BookingForm(props) {
     const [endDate, setEndDate] = useState("");
     const [age, setAge] = useState("");
     const [category, setCategory] = useState("");
-    const [extraDrivers, setExtraDrivers] = useState(0);
-    const [estimation, setEstimation] = useState(0);
+    const [extraDrivers, setExtraDrivers] = useState("");
+    const [estimation, setEstimation] = useState("");
     const [insurance, setInsurance] = useState(false);
     const [validated, setValidated] = useState(false);
-    const [cardNumber, setCardNumber] = useState(0);
+    const [cardNumber, setCardNumber] = useState("");
     const [cardHolder, setCardHolder] = useState("");
     const [cardExpiration, setCardExpiration] = useState("");
-    const [cardCCV, setCardCCV] = useState(0);
+    const [cardCCV, setCardCCV] = useState("");
+    const [redirect, setRedirect]= useState(false);
 
 
     const handleSubmit = (event) => {
@@ -42,6 +44,8 @@ function BookingForm(props) {
             return;
         }
         setValidated(true);
+        props.requestBooking({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance, price: props.price});
+        setRedirect(true);
     }
 
     const checkCard= ()=>{
@@ -49,7 +53,7 @@ function BookingForm(props) {
         if(cardNumber.length===16){
             if(cardHolder===null || cardHolder==="") return;
             if(cardCCV.length!==3) return;
-            if(cardExpiration.isBefore(moment())) return;
+            if(moment(cardExpiration).isBefore(moment())) return;
             props.checkCard({cardNumber: cardNumber, cardCCV: cardCCV, cardExpiration: cardExpiration, cardHolder: cardHolder});
         }
     }
@@ -59,7 +63,7 @@ function BookingForm(props) {
 
 
     const priceCalc = () => {
-        if (endDate && startDate && endDate.isAfter(startDate) && startDate.isAfter(moment())) {
+        if (endDate && startDate && endDate.isSameOrAfter(startDate) && startDate.isAfter(moment())) {
             switch (category) {
                 case "A":
                     break;
@@ -86,7 +90,7 @@ function BookingForm(props) {
                     props.setPrice(null);
                     return;
             }
-            if (!age || (age < 0 || age > 200)) { props.setPrice(null); return; }
+            if (!age || (age < 18 || age > 200)) { props.setPrice(null); return; }
             if (extraDrivers < 0 || extraDrivers > 5) { props.setPrice(null); return; }
             props.serverPrice({ startDate: startDate, endDate: endDate, age: age, category: category, extraDrivers: extraDrivers, estimation: estimation, insurance: insurance })
             return;
@@ -97,6 +101,7 @@ function BookingForm(props) {
     useEffect(checkCard,[cardCCV, cardExpiration, cardHolder, cardNumber])
 
     return <Container fluid>
+            {redirect && <Redirect to="/confirmation"/>}
         <Row>
             <Col md={{ span: "auto", offset: 3 }}>
                 <Form method="POST" noValidate validated={validated} onSubmit={(event) => handleSubmit(event)}>
@@ -131,7 +136,7 @@ function BookingForm(props) {
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label htmlFor="driverAge">Driver's Age</Form.Label>
-                            <Form.Control required type="number" max="200" onChange={(event) => setAge(event.target.value)} />
+                            <Form.Control required type="number" min="18" max="200" onChange={(event) => setAge(event.target.value)} />
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label className="mr-2" htmlFor="extraDrivers" >
@@ -212,7 +217,6 @@ function BookingForm(props) {
                             Confirm Booking
                       </Button>
                     </Col>
-                   
                 </Form>
             </Col>
         </Row>

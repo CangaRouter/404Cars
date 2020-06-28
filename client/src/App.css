@@ -136,6 +136,10 @@ body {
   background-color: rgba(0, 140, 255, 0.404);
   border-color: rgba(0, 0, 0, 0.562);
   border-radius: 0%;
-  box-shadow: 2px 2px 4px #81818156;
-  
+  box-shadow: 2px 2px 4px #81818156; 
+}
+
+#cancelButton{
+  border-color: rgba(0, 0, 0, 0.267);
+  border-radius: 3%;
 }

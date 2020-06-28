@@ -1,6 +1,5 @@
-
 class Booking{
-    constructor(id, startDate, endDate, age, category,  extraDrivers, estimation,  insurance, price, carID, userID ){
+    constructor(id, startDate, endDate, age, category,  extraDrivers, estimation,  insurance, price, car, userID ){
         if(id){
             this.id=id;
         }
@@ -12,7 +11,7 @@ class Booking{
         this.estimation=estimation;
         this.insurance=insurance;
         this.price=price;
-        this.carID=carID;
+        this.car=car;
         this.userID=userID;
     }
 
