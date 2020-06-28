@@ -1,1 +1,1 @@
-exports.secret="segreto";
+exports.secret="$2a$10$lCd9EF69YIloZPeKqfWP1OujMe95VPy5DmiSsOLRWLf5Cw33mYnX6";
