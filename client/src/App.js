@@ -58,8 +58,9 @@ function App() {
   }
 
   const checkCard = (cardInfo) => {
-    API.checkCard(cardInfo).then((cardConfirmation) => setCardConfirmation(cardConfirmation)).catch(() =>
-      setCardConfirmation(false));
+    API.checkCard(cardInfo).then((cardConfirmation) => setCardConfirmation(cardConfirmation))
+      .catch(() =>
+        setCardConfirmation(false));
   }
 
   const login = (email, password) => {
@@ -67,9 +68,9 @@ function App() {
       handleClose();
       setLoggedUser(user);
       setLoginError(false);
-    }).catch(()=>
-        setLoginError(true)
-      )
+    }).catch(() =>
+      setLoginError(true)
+    )
   }
 
   const logout = () => {
@@ -87,7 +88,7 @@ function App() {
       setCardConfirmation(null);
       getBookings();
     }
-    ).catch((err) => 
+    ).catch((err) =>
       setBookingResult(err.msg)
     );
   }
@@ -97,6 +98,7 @@ function App() {
       .then(() => getBookings())
       .catch(() => getBookings());
   }
+
   const getBookings = () => {
     if (loggedUser) {
       API.getBookings().then((bookings) => {
@@ -107,6 +109,7 @@ function App() {
         .catch(setBookingList([]))
     }
   }
+
   useEffect(setup, []);
   useEffect(getBookings, [loggedUser]);
   useEffect(applyFilters, [listaFiltriBrand, listaFiltriCategoria]);

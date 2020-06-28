@@ -5,6 +5,7 @@ const DBManager = require("./DBmanager.js");
 const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const { check, validationResult } = require('express-validator');
 const BASEAPI = "/api";
 const PORT = 3001;
 const dbErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Database error' }] };
@@ -210,7 +211,7 @@ app.post(BASEAPI + "/price", (req, res) => {
                     if (user.nbookings >= 3) price = price * 0.9;
                     let duration = moment.parseZone(req.body.endDate).diff(moment.parseZone(req.body.startDate), 'days');
                     price = price * (duration + 1);
-                    price= Number.parseFloat(price).toFixed(2);
+                    price = Number.parseFloat(price).toFixed(2);
                     res.json(price);
                 })
                 .catch((err) => { console.log(err); res.status(503).json(dbErrorObj) });
@@ -220,11 +221,17 @@ app.post(BASEAPI + "/price", (req, res) => {
         .catch((err) => { console.log(err); res.status(503).json(dbErrorObj) });
 });
 
-app.post(BASEAPI + "/card", (req, res) => {
-    if (req.body.cardNumber.length !== 16) { res.json(false); return; };
-    if (req.body.cardHolder.length === 0) { res.json(false); return; };
-    if (req.body.cardCCV.length != 3) { res.json(false); return; };
-    if (moment.parseZone(req.body.cardExpiration).isBefore(moment().local())) { res.json(false); return; };
+app.post(BASEAPI + "/card", [
+    check('cardHolder').isString().isLength({ min: 1 }),
+    check('cardNumber').isLength({ min: 16, max: 16 }),
+    check('cardCCV').isLength({ min: 3, max: 16 }),
+    check('cardExpiration').exists()
+], (req, res) => {
+    const valids = validationResult(req);
+    if (!valids.isEmpty()||moment.parseZone(req.body.cardExpiration).isBefore(moment().local())) {
+        return res.status(422).json({ errors: valids.array() });
+    }
+
     res.json(true)
 });
 
