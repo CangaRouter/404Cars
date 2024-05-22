@@ -59,21 +59,21 @@ function App() {
     });
   }
 
-// asking the server to calculate price based on current bookings situation
+  // asking the server to calculate price based on current bookings situation
   const serverPrice = (booking) => {
     API.calculatePrice(booking).then((price) => setPrice(price))
-    .catch(() =>
-      setPrice(null));
+      .catch(() =>
+        setPrice(null));
   }
-// asking the server to verify correctness of credit card info (STUB API)
+  // asking the server to verify correctness of credit card info (STUB API)
   const checkCard = (cardInfo) => {
     API.checkCard(cardInfo).then((cardConfirmation) => setCardConfirmation(cardConfirmation))
       .catch(() =>
         setCardConfirmation(false));
   }
-// login method providing server with email and password
-// saving user info as an object inside loggedUser
-// loginError needed to display alert in login modal
+  // login method providing server with email and password
+  // saving user info as an object inside loggedUser
+  // loginError needed to display alert in login modal
   const login = (email, password) => {
     API.userLogin(email, password).then((user) => {
       handleClose();
@@ -83,7 +83,7 @@ function App() {
       setLoginError(true)
     )
   }
-// ask the server to take its cookie back, we are done with it
+  // ask the server to take its cookie back, we are done with it
   const logout = () => {
     API.userLogout()
       .then(setLoggedUser(null))
@@ -113,7 +113,7 @@ function App() {
       .then(() => getBookings())
       .catch(() => getBookings());
   }
-//  retrieves bookings from DB to be displayed
+  //  retrieves bookings from DB to be displayed
   const getBookings = () => {
     if (loggedUser) {
       API.getBookings().then((bookings) => {
